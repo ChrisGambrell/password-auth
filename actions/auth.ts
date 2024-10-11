@@ -1,6 +1,6 @@
 'use server'
 
-import { signIn } from '@/lib/auth'
+import { signIn, signOut } from '@/lib/auth'
 import prisma from '@/lib/db'
 import { loginSchema, registerSchema } from '@/validators/auth'
 import { getErrorRedirect, getSuccessRedirect, parseFormData } from '@cgambrell/utils'
@@ -19,6 +19,10 @@ export async function login(_prevState: unknown, formData: FormData) {
 		if (error instanceof AuthError) redirect(getErrorRedirect('/login', error.cause?.err?.message))
 		throw error
 	}
+}
+
+export async function logout() {
+	await signOut({ redirectTo: '/login' })
 }
 
 export async function register(_prevState: unknown, formData: FormData) {
