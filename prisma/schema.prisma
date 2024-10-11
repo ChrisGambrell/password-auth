@@ -7,6 +7,96 @@ generator client {
   provider = "prisma-client-js"
 }
 
+model Customer {
+  id         String   @id
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  stripe_customer_id String? @unique
+
+  user User @relation(fields: [id], references: [id], onDelete: Cascade)
+}
+
+enum PriceInterval {
+  day
+  week
+  month
+  year
+}
+
+enum PriceType {
+  one_time
+  recurring
+}
+
+model Price {
+  id         String   @id
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  product_id        String?
+  active            Boolean?
+  unit_amount       BigInt?
+  currency          String?
+  type              PriceType?
+  interval          PriceInterval?
+  interval_count    Int?
+  trial_period_days Int?
+
+  product       Product?       @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  subscriptions Subscription[]
+}
+
+model Product {
+  id         String   @id
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  active      Boolean?
+  name        String?
+  description String?
+  image       String?
+  metadata    Json?
+  features    String[] @default([])
+
+  prices Price[]
+}
+
+enum SubscriptionStatus {
+  trialing
+  active
+  canceled
+  incomplete
+  incomplete_expired
+  past_due
+  unpaid
+  paused
+}
+
+model Subscription {
+  id         String   @id
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  price_id             String?
+  user_id              String?
+  status               SubscriptionStatus?
+  metadata             Json?
+  quantity             Int?
+  cancel_at_period_end Boolean?
+  created              DateTime
+  current_period_start DateTime
+  current_period_end   DateTime
+  ended_at             DateTime?
+  cancel_at            DateTime?
+  canceled_at          DateTime?
+  trial_start          DateTime?
+  trial_end            DateTime?
+
+  price Price? @relation(fields: [price_id], references: [id], onDelete: Cascade)
+  user  User?  @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
 model User {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
@@ -16,8 +106,14 @@ model User {
   email String  @unique
   image String?
 
+  billing_address Json?
+  payment_method  Json?
+
   emailVerified DateTime?
   passwordHash  String?
+
+  customer      Customer?
+  subscriptions Subscription[]
 
   accounts      Account[]
   sessions      Session[]
