@@ -2,7 +2,7 @@
 
 import { signIn, signOut } from '@/lib/auth'
 import prisma from '@/lib/db'
-import { loginSchema, registerSchema } from '@/validators/auth'
+import { loginSchema, registerSchema, verifyEmailSchema } from '@/validators/auth'
 import { getErrorRedirect, getSuccessRedirect, parseFormData } from '@cgambrell/utils'
 import { Prisma } from '@prisma/client'
 import bcrypt from 'bcryptjs'
@@ -40,4 +40,18 @@ export async function register(_prevState: unknown, formData: FormData) {
 	}
 
 	redirect(getSuccessRedirect('/login', 'Account created, please login'))
+}
+
+export async function verifyEmail(_prevState: unknown, formData: FormData) {
+	const { data, errors } = parseFormData(formData, verifyEmailSchema)
+	if (errors) return { errors }
+
+	try {
+		await signIn('resend', { email: data.email, redirect: false })
+	} catch (error) {
+		if (error instanceof AuthError) redirect(getErrorRedirect('/forgot', error.cause?.err?.message))
+		throw error
+	}
+
+	redirect(getSuccessRedirect('/login', 'A sign in link has been sent to your email address.'))
 }
