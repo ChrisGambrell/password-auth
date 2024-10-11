@@ -6,6 +6,7 @@ import Credentials from 'next-auth/providers/credentials'
 import Resend from 'next-auth/providers/resend'
 import { env } from 'process'
 import prisma from './db'
+import { AuthUser } from './utils'
 
 export const authConfig = {
 	adapter: PrismaAdapter(prisma),
@@ -44,7 +45,7 @@ export const authConfig = {
 
 export const { handlers, auth: session, signIn, signOut } = NextAuth(authConfig)
 
-export const auth = async () => {
+export const auth = async (): Promise<AuthUser> => {
 	const session = await NextAuth(authConfig).auth()
 	if (!session?.user) throw new Error('Not authenticated.')
 

@@ -1,13 +1,12 @@
+import { DataTable } from '@/components/data-table'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { PLACEHOLDER_IMAGE } from '@/lib/constants'
 import prisma from '@/lib/db'
 import { getSearchParam, ServerProps } from '@cgambrell/utils'
 import { FileIcon, ListFilterIcon, PlusCircleIcon } from 'lucide-react'
 import { Metadata } from 'next'
-import Image from 'next/image'
+import { columns } from './columns'
 
 export const metadata: Metadata = {
 	title: 'Users',
@@ -55,42 +54,7 @@ export default async function RootPage({ searchParams }: ServerProps) {
 							<CardDescription>Manage your users and view their linked accounts.</CardDescription>
 						</CardHeader>
 						<CardContent>
-							<Table>
-								<TableHeader>
-									<TableRow>
-										<TableHead className='hidden w-[100px] sm:table-cell'>
-											<span className='sr-only'>Image</span>
-										</TableHead>
-										<TableHead>Name</TableHead>
-										<TableHead className='hidden lg:table-cell'>Email address</TableHead>
-										<TableHead className='hidden md:table-cell'>Linked accounts</TableHead>
-										<TableHead>Created at</TableHead>
-									</TableRow>
-								</TableHeader>
-								<TableBody>
-									{users.map((user) => (
-										<TableRow key={user.id}>
-											<TableCell className='hidden sm:table-cell'>
-												<Image
-													className='aspect-square rounded-md object-cover'
-													src={user.image ?? PLACEHOLDER_IMAGE}
-													alt='Product image'
-													height='64'
-													width='64'
-												/>
-											</TableCell>
-											<TableCell className='font-medium'>{user.name}</TableCell>
-											<TableCell className='hidden lg:table-cell'>{user.email}</TableCell>
-											<TableCell className='hidden md:table-cell'>
-												{user.accounts.length === 0
-													? '-'
-													: user.accounts.map((account) => account.provider).join(', ')}
-											</TableCell>
-											<TableCell>{user.createdAt.toLocaleString()}</TableCell>
-										</TableRow>
-									))}
-								</TableBody>
-							</Table>
+							<DataTable columns={columns} data={users} defaultState={{ sorting: [{ id: 'createdAt', desc: true }] }} />
 						</CardContent>
 					</Card>
 				</TabsContent>
