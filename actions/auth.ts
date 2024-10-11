@@ -1,12 +1,25 @@
 'use server'
 
+import { signIn } from '@/lib/auth'
 import prisma from '@/lib/db'
-import { registerSchema } from '@/validators/auth'
+import { loginSchema, registerSchema } from '@/validators/auth'
 import { getErrorRedirect, getSuccessRedirect, parseFormData } from '@cgambrell/utils'
 import { Prisma } from '@prisma/client'
 import bcrypt from 'bcryptjs'
 import { AuthError } from 'next-auth'
 import { redirect } from 'next/navigation'
+
+export async function login(_prevState: unknown, formData: FormData) {
+	const { data, errors } = parseFormData(formData, loginSchema)
+	if (errors) return { errors }
+
+	try {
+		await signIn('credentials', { email: data.email, password: data.password, redirectTo: '/' })
+	} catch (error) {
+		if (error instanceof AuthError) redirect(getErrorRedirect('/login', error.cause?.err?.message))
+		throw error
+	}
+}
 
 export async function register(_prevState: unknown, formData: FormData) {
 	const { data, errors } = parseFormData(formData, registerSchema)
