@@ -2,11 +2,13 @@
 
 import { DataTableColumnHeader } from '@/components/data-table/column-header'
 import { PLACEHOLDER_IMAGE } from '@/lib/constants'
-import { User } from '@prisma/client'
+import { Prisma, User } from '@prisma/client'
 import { ColumnDef } from '@tanstack/react-table'
 import Image from 'next/image'
 
-export const columns: ColumnDef<User>[] = [
+type ColType = Prisma.UserGetPayload<{ include: { accounts: true } }>
+
+export const columns: ColumnDef<ColType>[] = [
 	{
 		accessorKey: 'image',
 		header: () => <span className='sr-only'>Image</span>,
@@ -29,6 +31,20 @@ export const columns: ColumnDef<User>[] = [
 	{
 		accessorKey: 'email',
 		header: ({ column }) => <DataTableColumnHeader column={column} title='Email address' />,
+		meta: { className: 'hidden lg:table-cell' },
+	},
+	{
+		accessorKey: 'accounts',
+		header: ({ column }) => <DataTableColumnHeader column={column} title='Linked accounts' />,
+		cell: ({ getValue }) => (
+			<span>
+				{getValue<ColType['accounts']>().length
+					? getValue<ColType['accounts']>()
+							.map((account) => account.provider)
+							.join(', ')
+					: '-'}
+			</span>
+		),
 		meta: { className: 'hidden md:table-cell' },
 	},
 	{

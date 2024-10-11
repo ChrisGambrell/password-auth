@@ -7,6 +7,7 @@ import { getErrorRedirect, getSuccessRedirect, parseFormData } from '@cgambrell/
 import { Prisma } from '@prisma/client'
 import bcrypt from 'bcryptjs'
 import { AuthError } from 'next-auth'
+import { BuiltInProviderType } from 'next-auth/providers'
 import { redirect } from 'next/navigation'
 
 export async function login(_prevState: unknown, formData: FormData) {
@@ -23,6 +24,15 @@ export async function login(_prevState: unknown, formData: FormData) {
 
 export async function logout() {
 	await signOut({ redirectTo: '/login' })
+}
+
+export async function oauth(provider: BuiltInProviderType) {
+	try {
+		await signIn(provider, { redirectTo: '/' })
+	} catch (error) {
+		if (error instanceof AuthError) redirect(getErrorRedirect('/login', error.cause?.err?.message))
+		throw error
+	}
 }
 
 export async function register(_prevState: unknown, formData: FormData) {
