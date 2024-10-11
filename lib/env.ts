@@ -15,8 +15,11 @@ export const env = createEnv({
 		AUTH_RESEND_EMAIL: z.string().email(),
 
 		DATABASE_URL: z.string().url(),
+
+		STRIPE_SECRET_KEY: z.string().min(1),
+		STRIPE_WEBHOOK_SECRET: z.string().min(1),
 	},
-	client: { NEXT_PUBLIC_SITE_URL: z.string().url() },
+	client: { NEXT_PUBLIC_SITE_URL: z.string().url(), NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string().min(1) },
 	runtimeEnv: {
 		AUTH_SECRET: process.env.AUTH_SECRET,
 
@@ -31,6 +34,10 @@ export const env = createEnv({
 
 		DATABASE_URL: process.env.DATABASE_URL,
 
+		STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
+		STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
+
 		NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
+		NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
 	},
 })

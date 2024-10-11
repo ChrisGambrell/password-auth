@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "next lint",
     "postinstall": "npx prisma generate",
-    "seed:db": "ts-node scripts/seed-db.ts"
+    "seed:db": "ts-node scripts/seed-db.ts",
+    "seed:stripe": "npx ts-node scripts/seed-stripe.ts",
+    "stripe:listen": "stripe listen --forward-to=localhost:3000/api/webhooks"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.7.0",
@@ -39,6 +41,7 @@
     "next-auth": "^5.0.0-beta.22",
     "react": "^18",
     "react-dom": "^18",
+    "stripe": "^17.2.0",
     "tailwind-merge": "^2.5.3",
     "tailwindcss-animate": "^1.0.7",
     "use-debounce": "^10.0.3",
