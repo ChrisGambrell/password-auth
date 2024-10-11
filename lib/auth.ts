@@ -1,6 +1,9 @@
+import { PrismaAdapter } from '@auth/prisma-adapter'
 import NextAuth, { NextAuthConfig } from 'next-auth'
+import prisma from './db'
 
 export const authConfig = {
+	adapter: PrismaAdapter(prisma),
 	callbacks: {
 		authorized: ({ auth, request: { nextUrl } }) => {
 			const allowedPages = ['/forgot', '/login', '/privacy', '/register', '/terms']
@@ -16,6 +19,17 @@ export const authConfig = {
 	},
 	pages: { signIn: '/login' },
 	providers: [],
+	session: { strategy: 'jwt' },
 } satisfies NextAuthConfig
 
-export const { handlers, signIn, signOut, auth } = NextAuth(authConfig)
+export const { handlers, auth: session, signIn, signOut } = NextAuth(authConfig)
+
+export const auth = async () => {
+	const session = await NextAuth(authConfig).auth()
+	if (!session?.user) throw new Error('Not authenticated.')
+
+	const user = await prisma.user.findFirst({ where: { email: session.user.email ?? '' } })
+	if (!user) throw new Error('User not found')
+
+	return user
+}
