@@ -2,6 +2,9 @@ import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 import './globals.css'
 
+// Import to verify environment variables are set
+import '@/lib/env'
+
 const geistSans = localFont({
 	src: './fonts/GeistVF.woff',
 	variable: '--font-geist-sans',
