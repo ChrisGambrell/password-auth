@@ -17,7 +17,7 @@ export default async function RootPage({ searchParams }: ServerProps) {
 	const q = getSearchParam(searchParams, 'q') ?? ''
 	const users = await prisma.user.findMany({
 		where: { OR: [{ email: { contains: q, mode: 'insensitive' } }, { name: { contains: q, mode: 'insensitive' } }] },
-		include: { accounts: true },
+		include: { accounts: true, subscriptions: { where: { status: 'active' }, include: { price: { include: { product: true } } } } },
 	})
 
 	return (
@@ -69,6 +69,13 @@ export default async function RootPage({ searchParams }: ServerProps) {
 												[] as { label: string; value: string }[]
 											),
 										title: 'Linked accounts',
+									},
+									subscriptions: {
+										options: users
+											.map((u) => u.subscriptions[0]?.price?.product?.name ?? '')
+											.filter((n) => n !== '')
+											.map((n) => ({ label: n, value: n })),
+										title: 'Subscription',
 									},
 								}}
 							/>
