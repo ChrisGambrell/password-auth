@@ -1,4 +1,4 @@
-import { DataTable } from '@/components/data-table'
+import { DataTable } from '@/components/data-table/data-table'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -54,7 +54,24 @@ export default async function RootPage({ searchParams }: ServerProps) {
 							<CardDescription>Manage your users and view their linked accounts.</CardDescription>
 						</CardHeader>
 						<CardContent>
-							<DataTable columns={columns} data={users} defaultState={{ sorting: [{ id: 'createdAt', desc: true }] }} />
+							<DataTable
+								columns={columns}
+								data={users}
+								defaultState={{ sorting: [{ id: 'createdAt', desc: true }] }}
+								filters={{
+									accounts: {
+										options: users
+											.map((u) => u.accounts.map((a) => a.provider))
+											.flat()
+											.reduce(
+												(prev, curr) =>
+													prev.find((p) => p.value === curr) ? prev : [...prev, { label: curr, value: curr }],
+												[] as { label: string; value: string }[]
+											),
+										title: 'Linked accounts',
+									},
+								}}
+							/>
 						</CardContent>
 					</Card>
 				</TabsContent>

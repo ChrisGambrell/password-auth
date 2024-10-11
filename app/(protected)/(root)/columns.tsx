@@ -35,6 +35,7 @@ export const columns: ColumnDef<ColType>[] = [
 	},
 	{
 		accessorKey: 'accounts',
+		filterFn: (row, _, value) => row.original.accounts.some((account) => value.includes(account.provider)),
 		header: ({ column }) => <DataTableColumnHeader column={column} title='Linked accounts' />,
 		cell: ({ getValue }) => (
 			<span>

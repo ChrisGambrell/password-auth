@@ -9,8 +9,9 @@ import {
 import { cn } from '@/lib/utils'
 import { ArrowDownIcon, ArrowUpIcon, CaretSortIcon, EyeNoneIcon } from '@radix-ui/react-icons'
 import { Column } from '@tanstack/react-table'
+import { HTMLAttributes } from 'react'
 
-interface DataTableColumnHeaderProps<TData, TValue> extends React.HTMLAttributes<HTMLDivElement> {
+interface DataTableColumnHeaderProps<TData, TValue> extends HTMLAttributes<HTMLDivElement> {
 	column: Column<TData, TValue>
 	title: string
 }
