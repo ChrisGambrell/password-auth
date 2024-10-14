@@ -7,7 +7,7 @@ import { PanelLeftIcon } from 'lucide-react'
 import Link from 'next/link'
 import { MobileNavItem } from './nav-item'
 
-export function MobileNav() {
+export function MobileNav({ subscribed }: { subscribed: boolean }) {
 	return (
 		<Sheet>
 			<SheetTrigger asChild>
@@ -24,9 +24,11 @@ export function MobileNav() {
 						<MOCK_APP_ICON className='h-5 w-5 transition-all group-hover:scale-110' />
 						<span className='sr-only'>{MOCK_APP_NAME}</span>
 					</Link>
-					{MOCK_NAV_LINKS.flat().map((link) => (
-						<MobileNavItem key={link.href} {...link} />
-					))}
+					{MOCK_NAV_LINKS.flat()
+						.filter((link) => !link.subscription || (link.subscription && subscribed))
+						.map((link) => (
+							<MobileNavItem key={link.href} {...link} />
+						))}
 				</nav>
 			</SheetContent>
 		</Sheet>

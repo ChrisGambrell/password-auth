@@ -61,3 +61,5 @@ export const auth = async (): Promise<AuthUser> => {
 
 	return user
 }
+
+export const isSubscribed = (user: AuthUser): boolean => user.subscriptions.some((s) => s.status === 'active')
