@@ -74,7 +74,11 @@ export default async function RootPage({ searchParams }: ServerProps) {
 										options: users
 											.map((u) => u.subscriptions[0]?.price?.product?.name ?? '')
 											.filter((n) => n !== '')
-											.map((n) => ({ label: n, value: n })),
+											.reduce(
+												(prev, curr) =>
+													prev.find((p) => p.value === curr) ? prev : [...prev, { label: curr, value: curr }],
+												[] as { label: string; value: string }[]
+											),
 										title: 'Subscription',
 									},
 								}}
